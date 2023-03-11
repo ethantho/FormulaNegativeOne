@@ -15,6 +15,8 @@ public class CarInputHandler : MonoBehaviour
     float RCool;
 
     float doubleTapThreshold = 0.3f;
+
+    float sideAttack;
     // Start is called before the first frame update
     void Start()
     {
@@ -33,6 +35,7 @@ public class CarInputHandler : MonoBehaviour
     void Update()
     {
         Vector3 inputVector = Vector2.zero;
+        sideAttack = 0f;
 
         //inputVector.x = Input.GetAxis("Horizontal");
         if(Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
@@ -58,7 +61,7 @@ public class CarInputHandler : MonoBehaviour
         }
 
 
-        /*
+        
         if (Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A))
         {
             inputVector.z = 1;
@@ -70,14 +73,14 @@ public class CarInputHandler : MonoBehaviour
         else
         {
             inputVector.z = 0;
-        }*/
+        }
 
         if (Input.GetKeyDown(KeyCode.D))
         {
             if (LCool > 0 && LCount == 1/*Number of Taps you want Minus One*/)
             {
                 Debug.Log("Double Tapped D");
-                inputVector.z = 1;
+                sideAttack = 1;
                 
             }
             else
@@ -92,7 +95,7 @@ public class CarInputHandler : MonoBehaviour
             if (RCool > 0 && RCount == 1/*Number of Taps you want Minus One*/)
             {
                 Debug.Log("Double Tapped A");
-                inputVector.z = -1;
+                sideAttack = -1;
 
             }
             else
@@ -128,7 +131,7 @@ public class CarInputHandler : MonoBehaviour
 
 
 
-        cc.SetInputVector(inputVector);
+        cc.SetInputVector(inputVector, sideAttack);
         cg.SetInputVector(inputVector);
         ls.SetInputVector(inputVector);
         rs.SetInputVector(inputVector);

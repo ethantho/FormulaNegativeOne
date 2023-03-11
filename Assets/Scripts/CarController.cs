@@ -17,6 +17,7 @@ public class CarController : MonoBehaviour
     float accelerationInput = 0;
     float steeringInput = 0;
     float strafingInput = 0;
+    float sideAttackInput = 0;
 
 
 
@@ -27,16 +28,25 @@ public class CarController : MonoBehaviour
     [SerializeField] float currentSpeed = 0;
     Vector2 strafe;
     [SerializeField] Vector2 sideAttack;
+    [SerializeField] Vector2 boostVec;
+    [SerializeField] Vector3 jumpVec;
 
 
     Rigidbody2D rb;
+    Collider2D col;
+
+    bool jumping = false;
+    public float jumpSpeed;
+    public float fallSpeed;
 
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        col = GetComponent<Collider2D>();
         sideAttack = Vector2.zero;
+        jumpVec = Vector3.zero;
     }
 
     private void Update()
@@ -45,6 +55,8 @@ public class CarController : MonoBehaviour
         DoGrip();
         DoDrag();
         DoSideAttack();
+
+        transform.position += jumpVec * (Time.deltaTime / (1f / 60f));
     }
 
     private void FixedUpdate()
@@ -59,8 +71,29 @@ public class CarController : MonoBehaviour
         DoCollisions();
 
 
+        
+
 
         sideAttack *= 0.9f;
+        boostVec *= 0.99f;
+
+        if(jumping)
+        {
+            jumpVec += new Vector3(0, 0, fallSpeed);
+            col.enabled = false;
+        }
+        else
+        {
+            jumpVec = Vector3.zero;
+            col.enabled = true;
+        }
+
+        if(transform.position.z >= -1)
+        {
+            transform.position = new Vector3 (transform.position.x, transform.position.y, -0.005f);
+            jumpVec = Vector3.zero;
+            jumping = false;
+        }
 
         //Debug.Log(Mathf.DeltaAngle(facingAngle, travelAngle));
     }
@@ -68,9 +101,9 @@ public class CarController : MonoBehaviour
 
     void DoSideAttack()
     {
-        if (strafingInput != 0)
+        if (sideAttackInput != 0)
         {
-            sideAttack = transform.right * strafingInput * sideAttackFactor;
+            sideAttack = transform.right * sideAttackInput * sideAttackFactor;
             travelAngle = Mathf.Lerp(facingAngle, travelAngle, 0.5f);
         }
             
@@ -153,7 +186,7 @@ public class CarController : MonoBehaviour
         {
             if(strafingInput != 0)
             {
-                bonusGrip = 1.5f;
+                bonusGrip = 2f;
             }
         }
 
@@ -172,18 +205,19 @@ public class CarController : MonoBehaviour
 
     void DoStrafing()
     {
-        //strafe = transform.right * strafingInput * strafeFactor * (currentSpeed / topSpeed);
-        //rb.MovePosition(rb.position + strafe);
+        strafe = transform.right * strafingInput * strafeFactor * (currentSpeed / topSpeed);
+        
     }
 
 
 
     void ApplyVelocity()
     {
-        Vector2 vel = Quaternion.AngleAxis(-travelAngle, -Vector3.forward) * Vector3.up; //TODO: change to travelAngle
+        Vector2 vel = Quaternion.AngleAxis(-travelAngle, -Vector3.forward) * Vector3.up;
         vel *= currentSpeed;
         vel += strafe;
         vel += sideAttack;
+        vel += boostVec;
         rb.velocity = vel; 
     }
 
@@ -192,10 +226,25 @@ public class CarController : MonoBehaviour
         //TODO
     }
 
-    public void SetInputVector(Vector3 inputVector)
+    public void AddBoost(Vector3 dir)
+    {
+        boostVec = dir;
+        currentSpeed = topSpeed;
+        //travelAngle = Vector3.Angle(dir, Vector3.up);
+    }
+
+    public void Jump()
+    {
+        jumpVec = new Vector3(0, 0, -jumpSpeed);
+        
+        jumping = true;
+    }
+
+    public void SetInputVector(Vector3 inputVector, float saInput)
     {
         steeringInput = inputVector.x;
         accelerationInput = inputVector.y;
         strafingInput = inputVector.z;
+        sideAttackInput = saInput;
     }
 }

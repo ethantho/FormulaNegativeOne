@@ -13,7 +13,7 @@ public class CarGraphics : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        turnVec = new Vector3(0, 0, 10);
+        turnVec = new Vector3(0, 0, 15);
         strafeVec = new Vector3(0, 0, 5);
     }
 
