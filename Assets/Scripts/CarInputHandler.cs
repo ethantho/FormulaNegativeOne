@@ -174,13 +174,16 @@ public class CarInputHandler : MonoBehaviour
 
 
 
-        if (Input.GetKeyDown(KeyCode.W))
+        if (Input.GetKeyDown(KeyCode.W) || Input.GetButtonDown("Fire1"))
         {
-            GetComponent<AudioSource>().Play();
+            GetComponents<AudioSource>()[0].Play();
         }
 
 
         Debug.Log(Input.GetAxis("Horizontal"));
+
+
+        
 
 
         if (Input.GetKeyDown(KeyCode.R))

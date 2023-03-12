@@ -67,6 +67,9 @@ public class CarController : MonoBehaviour
         colliding = 0;
 
         startedMoving = false;
+
+        GetComponents<AudioSource>()[1].Play();
+
     }
 
     private void Update()
@@ -93,7 +96,10 @@ public class CarController : MonoBehaviour
         {
             nrg.depleteEnergy(damageFactor * Time.deltaTime);
         }
-        
+
+        GetComponents<AudioSource>()[1].pitch = (currentSpeed / topSpeed);
+
+
     }
 
     private void FixedUpdate()
@@ -333,10 +339,12 @@ public class CarController : MonoBehaviour
     public void Die()
     {
         Debug.Log("Died");
-        SpriteRenderer sp = GetComponentInChildren<SpriteRenderer>();
-        sp.enabled = false;
-        dead = true;
+        //SpriteRenderer sp = GetComponentInChildren<SpriteRenderer>();
+        //sp.enabled = false;
         GetComponentInChildren<ExplosionController>().explode();
+        GetComponentInChildren<MeshRenderer>().enabled = false;
+        dead = true;
+        
         rb.velocity = Vector2.zero;
         this.enabled = false;
     }
