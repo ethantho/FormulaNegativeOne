@@ -10,7 +10,7 @@ public class SpeedAndTime : MonoBehaviour
     TextMeshProUGUI timerText;
     CarController cc;
     CarLapCounter clc;
-    float tt = 0;
+    public float tt = 0;
     float spd;
     int dispSpd;
     // Start is called before the first frame update
@@ -21,6 +21,7 @@ public class SpeedAndTime : MonoBehaviour
 
         cc = GetComponentInParent<CarController>();
         clc = GetComponentInParent<CarLapCounter>();
+        tt = 0f;
 
     }
 
@@ -39,7 +40,7 @@ public class SpeedAndTime : MonoBehaviour
 
         if (cc.dead)
         {
-            timerText.text = "DEAD";
+            timerText.text = "DEAD\nPRESS R TO RESTART";
             
             this.enabled = false;
         }
