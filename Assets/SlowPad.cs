@@ -18,8 +18,8 @@ public class SlowPad : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        CarController cc = collision.GetComponent<CarController>();
-
+        CarController cc = collision.gameObject.GetComponentInChildren<CarController>();
+        Debug.Log(cc);
         if ( cc != null)
         {
             cc.SlowDown();

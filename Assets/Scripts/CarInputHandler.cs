@@ -146,5 +146,12 @@ public class CarInputHandler : MonoBehaviour
         cg.SetInputVector(inputVector);
         ls.SetInputVector(inputVector);
         rs.SetInputVector(inputVector);
+
+
+
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            GetComponent<AudioSource>().Play();
+        }
     }
 }

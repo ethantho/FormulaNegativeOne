@@ -10,7 +10,7 @@ public class CarLapCounter : MonoBehaviour
     int numberOfPassedCheckPoints = 0;
 
     public int lapsCompleted = 0;
-    const int lapsToComplete = 3;
+    public const int lapsToComplete = 5;
 
     public bool isRaceCompleted = false;
 

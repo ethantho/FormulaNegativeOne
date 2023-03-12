@@ -13,6 +13,7 @@ public class CarController : MonoBehaviour
     public float sideAttackFactor;
     public float topSpeed;
     public float damageFactor;
+    public float boostTopSpeed;
 
 
     float accelerationInput = 0;
@@ -191,7 +192,7 @@ public class CarController : MonoBehaviour
     {
         if(currentSpeed > topSpeed)
         {
-            currentSpeed -= accelerationFactor * (Time.deltaTime / ( 1f / 60f));
+            currentSpeed -= (Time.deltaTime / ( 1f / 60f)) * (currentSpeed / topSpeed) * dragFactor;
         }
         if(currentSpeed < 0)
         {
@@ -200,11 +201,11 @@ public class CarController : MonoBehaviour
 
         if(accelerationInput == 0 && currentSpeed > 0)
         {
-            currentSpeed -= accelerationFactor * dragFactor * (Time.deltaTime / (1f / 60f));
+            currentSpeed -=  accelerationFactor * dragFactor * (Time.deltaTime / (1f / 60f)) * (currentSpeed / topSpeed);
         }
         if (accelerationInput == 0 && currentSpeed < 0)
         {
-            currentSpeed += accelerationFactor * dragFactor * (Time.deltaTime / (1f / 60f));
+            currentSpeed += accelerationFactor * dragFactor * (Time.deltaTime / (1f / 60f)) * (currentSpeed / topSpeed);
         }
 
     }
@@ -278,18 +279,19 @@ public class CarController : MonoBehaviour
     public void AddBoost(Vector3 dir)
     {
         boostVec = dir;
-        if(currentSpeed < topSpeed)
-            currentSpeed = topSpeed;
+        GetComponent<AudioSource>().Play();
+        if (currentSpeed < topSpeed)
+            currentSpeed = Mathf.Lerp(currentSpeed, topSpeed, 0.5f );
 
         //travelAngle = Vector3.Angle(dir, Vector3.up);
     }
 
     public void selfBoost()
     {
-        if (boosting && gotBoostPower && (nrg.getEnergy() - (accelerationFactor * damageFactor / 8) > 0))
+        if (currentSpeed < boostTopSpeed && boosting && gotBoostPower && (nrg.getEnergy() - (accelerationFactor * damageFactor / 8) > 0))
         {
             currentSpeed += accelerationFactor * 2;
-            nrg.depleteEnergy(accelerationFactor * damageFactor / 8);
+            nrg.depleteEnergy( damageFactor / 64);
         }
             
     }
@@ -305,11 +307,11 @@ public class CarController : MonoBehaviour
     {
         if(currentSpeed > 0)
         {
-            currentSpeed -= dragFactor * 3 * Time.deltaTime;
+            currentSpeed -= dragFactor * (Time.deltaTime / (1f / 60f)) * (currentSpeed / topSpeed);
         }
         else if(currentSpeed < 0)
         {
-            currentSpeed += dragFactor * 3 * Time.deltaTime;
+            currentSpeed += dragFactor  * (Time.deltaTime / (1f / 60f)) * (currentSpeed / topSpeed);
         }
     }
 
