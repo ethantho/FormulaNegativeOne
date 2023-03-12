@@ -12,6 +12,7 @@ public class CarController : MonoBehaviour
     public float strafeFactor;
     public float sideAttackFactor;
     public float topSpeed;
+    public float damageFactor;
 
 
     float accelerationInput = 0;
@@ -34,6 +35,7 @@ public class CarController : MonoBehaviour
 
     Rigidbody2D rb;
     CircleCollider2D col;
+    EnergyBar nrg;
     //BoxCollider2D deathCol;
 
     public bool jumping = false;
@@ -45,12 +47,17 @@ public class CarController : MonoBehaviour
 
     public float totalSpeed;
 
+    public bool boosting;
+
+    public bool dead;
+
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<CircleCollider2D>();
+        nrg = GetComponentInChildren<EnergyBar>();
         //deathCol = GetComponent<BoxCollider2D>();
         sideAttack = Vector2.zero;
         jumpVec = Vector3.zero;
@@ -78,6 +85,11 @@ public class CarController : MonoBehaviour
                 deathCheck = false;
             }
         }
+
+        if(colliding != 0)
+        {
+            nrg.depleteEnergy(damageFactor * Time.deltaTime);
+        }
         
     }
 
@@ -86,6 +98,8 @@ public class CarController : MonoBehaviour
 
         RotateCar();
         AccelerateCar();
+
+        selfBoost();
 
         DoStrafing();
 
@@ -256,7 +270,18 @@ public class CarController : MonoBehaviour
     {
         boostVec = dir;
         currentSpeed = topSpeed;
+
         //travelAngle = Vector3.Angle(dir, Vector3.up);
+    }
+
+    public void selfBoost()
+    {
+        if (boosting && (nrg.getEnergy() - (accelerationFactor * damageFactor / 8) > 0))
+        {
+            currentSpeed += accelerationFactor * 2;
+            nrg.depleteEnergy(accelerationFactor * damageFactor / 8);
+        }
+            
     }
 
     public void Jump()
@@ -278,12 +303,13 @@ public class CarController : MonoBehaviour
         }
     }
 
-    public void SetInputVector(Vector3 inputVector, float saInput)
+    public void SetInputVector(Vector3 inputVector, float saInput, bool boost)
     {
         steeringInput = inputVector.x;
         accelerationInput = inputVector.y;
         strafingInput = inputVector.z;
         sideAttackInput = saInput;
+        boosting = boost;
 
         if(inputVector.magnitude != 0)
         {
@@ -296,16 +322,23 @@ public class CarController : MonoBehaviour
         Debug.Log("Died");
         SpriteRenderer sp = GetComponentInChildren<SpriteRenderer>();
         sp.enabled = false;
+        dead = true;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         colliding++;
+        
     }
     private void OnCollisionExit2D(Collision2D collision)
     {
         colliding--;
     }
+
+    /*private void OnCollisionStay(Collision collision)
+    {
+        nrg.depleteEnergy(damageFactor * Time.deltaTime);
+    }*/
 
 
 }

@@ -16,7 +16,9 @@ public class CarInputHandler : MonoBehaviour
 
     float doubleTapThreshold = 0.2f;
 
-    float sideAttack;
+    [SerializeField] float sideAttack;
+    [SerializeField] bool boost;
+    [SerializeField] Vector3 inputVector;
     // Start is called before the first frame update
     void Start()
     {
@@ -34,15 +36,15 @@ public class CarInputHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector3 inputVector = Vector2.zero;
+        inputVector = Vector2.zero;
         sideAttack = 0f;
 
         //inputVector.x = Input.GetAxis("Horizontal");
-        if(Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
+        if(Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A))
         {
             inputVector.x = 1;
         }
-        else if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
+        else if (Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
         {
             inputVector.x = -1;
         }
@@ -51,7 +53,7 @@ public class CarInputHandler : MonoBehaviour
             inputVector.x = 0;
         }
 
-        if (Input.GetKey(KeyCode.UpArrow))
+        if (Input.GetKey(KeyCode.W))
         {
             inputVector.y = 1;
         }
@@ -62,11 +64,11 @@ public class CarInputHandler : MonoBehaviour
 
 
         
-        if (Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A))
+        if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
         {
             inputVector.z = 1;
         }
-        else if (Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
+        else if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
         {
             inputVector.z = -1;
         }
@@ -75,11 +77,11 @@ public class CarInputHandler : MonoBehaviour
             inputVector.z = 0;
         }
 
-        if (Input.GetKeyDown(KeyCode.D))
+        if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             if (LCool > 0 && LCount == 1/*Number of Taps you want Minus One*/)
             {
-                Debug.Log("Double Tapped D");
+                Debug.Log("Double Tapped right");
                 sideAttack = 1;
                 
             }
@@ -90,11 +92,11 @@ public class CarInputHandler : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             if (RCool > 0 && RCount == 1/*Number of Taps you want Minus One*/)
             {
-                Debug.Log("Double Tapped A");
+                Debug.Log("Double Tapped left");
                 sideAttack = -1;
 
             }
@@ -128,10 +130,19 @@ public class CarInputHandler : MonoBehaviour
         }
 
 
+        if (Input.GetKey(KeyCode.Space))
+        {
+            boost = true;
+        }
+        else
+        {
+            boost = false;
+        }
 
 
 
-        cc.SetInputVector(inputVector, sideAttack);
+
+        cc.SetInputVector(inputVector, sideAttack, boost);
         cg.SetInputVector(inputVector);
         ls.SetInputVector(inputVector);
         rs.SetInputVector(inputVector);
