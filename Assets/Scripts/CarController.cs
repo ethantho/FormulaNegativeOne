@@ -20,6 +20,8 @@ public class CarController : MonoBehaviour
     float strafingInput = 0;
     float sideAttackInput = 0;
 
+    public bool gotBoostPower = false;
+
 
 
     //For physics Calculations
@@ -255,8 +257,15 @@ public class CarController : MonoBehaviour
         Vector2 vel = Quaternion.AngleAxis(-travelAngle, -Vector3.forward) * Vector3.up;
         vel *= currentSpeed;
         vel += strafe;
+
+        sideAttack = Vector3.Project(sideAttack, transform.right);
         vel += sideAttack;
+
+        boostVec = Vector3.Project(boostVec, vel).normalized * boostVec.magnitude;
         vel += boostVec;
+
+
+
         rb.velocity = vel;
         totalSpeed = vel.magnitude;
     }
@@ -269,14 +278,15 @@ public class CarController : MonoBehaviour
     public void AddBoost(Vector3 dir)
     {
         boostVec = dir;
-        currentSpeed = topSpeed;
+        if(currentSpeed < topSpeed)
+            currentSpeed = topSpeed;
 
         //travelAngle = Vector3.Angle(dir, Vector3.up);
     }
 
     public void selfBoost()
     {
-        if (boosting && (nrg.getEnergy() - (accelerationFactor * damageFactor / 8) > 0))
+        if (boosting && gotBoostPower && (nrg.getEnergy() - (accelerationFactor * damageFactor / 8) > 0))
         {
             currentSpeed += accelerationFactor * 2;
             nrg.depleteEnergy(accelerationFactor * damageFactor / 8);
@@ -335,10 +345,10 @@ public class CarController : MonoBehaviour
         colliding--;
     }
 
-    /*private void OnCollisionStay(Collision collision)
+    private void OnCollisionStay(Collision collision)
     {
-        nrg.depleteEnergy(damageFactor * Time.deltaTime);
-    }*/
+        SlowDown();
+    }
 
 
 }
