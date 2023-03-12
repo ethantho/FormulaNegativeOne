@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CarInputHandler : MonoBehaviour
 {
@@ -40,7 +41,7 @@ public class CarInputHandler : MonoBehaviour
         sideAttack = 0f;
 
         //inputVector.x = Input.GetAxis("Horizontal");
-        if(Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A))
+        if((Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A)))
         {
             inputVector.x = 1;
         }
@@ -140,6 +141,30 @@ public class CarInputHandler : MonoBehaviour
         }
 
 
+        if(inputVector.x == 0)
+        {
+            //Input.GetButton()
+            inputVector.x = Input.GetAxis("Horizontal");
+        }
+
+        if(inputVector.y == 0)
+        {
+            if (Input.GetButton("Fire1"))
+            {
+                inputVector.y = 1;
+            }
+            
+        }
+
+        if (!boost)
+        {
+            boost = Input.GetButton("Fire2");
+        }
+
+        if(inputVector.z == 0)
+        {
+            inputVector.z = Input.GetAxis("Strafe");
+        }
 
 
         cc.SetInputVector(inputVector, sideAttack, boost);
@@ -152,6 +177,15 @@ public class CarInputHandler : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.W))
         {
             GetComponent<AudioSource>().Play();
+        }
+
+
+        Debug.Log(Input.GetAxis("Horizontal"));
+
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }
 }

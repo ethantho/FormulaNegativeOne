@@ -146,7 +146,8 @@ public class CarController : MonoBehaviour
         if (sideAttackInput != 0)
         {
             sideAttack = transform.right * sideAttackInput * sideAttackFactor;
-            travelAngle = Mathf.Lerp(facingAngle, travelAngle, 0.5f);
+            //travelAngle = Mathf.Lerp(facingAngle, travelAngle, 0.5f);
+            travelAngle = facingAngle;
         }
             
         //sideAttack *= 0.95f;
@@ -335,6 +336,9 @@ public class CarController : MonoBehaviour
         SpriteRenderer sp = GetComponentInChildren<SpriteRenderer>();
         sp.enabled = false;
         dead = true;
+        GetComponentInChildren<ExplosionController>().explode();
+        rb.velocity = Vector2.zero;
+        this.enabled = false;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

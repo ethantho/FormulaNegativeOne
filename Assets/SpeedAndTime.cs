@@ -35,6 +35,13 @@ public class SpeedAndTime : MonoBehaviour
             tt += Time.deltaTime;
         }
         timerText.text = tt.ToString();
+
+
+        if (cc.dead)
+        {
+            timerText.text = "DEAD";
             
+            this.enabled = false;
+        }
     }
 }
