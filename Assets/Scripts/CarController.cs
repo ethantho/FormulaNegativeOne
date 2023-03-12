@@ -33,20 +33,30 @@ public class CarController : MonoBehaviour
 
 
     Rigidbody2D rb;
-    Collider2D col;
+    CircleCollider2D col;
+    //BoxCollider2D deathCol;
 
-    bool jumping = false;
+    public bool jumping = false;
     public float jumpSpeed;
     public float fallSpeed;
+    public int colliding;
+    bool deathCheck = false;
+    public bool startedMoving;
+
+    public float totalSpeed;
 
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        col = GetComponent<Collider2D>();
+        col = GetComponent<CircleCollider2D>();
+        //deathCol = GetComponent<BoxCollider2D>();
         sideAttack = Vector2.zero;
         jumpVec = Vector3.zero;
+        colliding = 0;
+
+        startedMoving = false;
     }
 
     private void Update()
@@ -57,6 +67,18 @@ public class CarController : MonoBehaviour
         DoSideAttack();
 
         transform.position += jumpVec * (Time.deltaTime / (1f / 60f));
+        if (deathCheck)
+        {
+            if(colliding > 0)
+            {
+                Die();
+            }
+            else
+            {
+                deathCheck = false;
+            }
+        }
+        
     }
 
     private void FixedUpdate()
@@ -82,17 +104,20 @@ public class CarController : MonoBehaviour
             jumpVec += new Vector3(0, 0, fallSpeed);
             col.enabled = false;
         }
-        else
-        {
-            jumpVec = Vector3.zero;
-            col.enabled = true;
-        }
+        
 
-        if(transform.position.z >= -1)
+        if(transform.position.z >= -1 && transform.position.z != -0.1f)
         {
-            transform.position = new Vector3 (transform.position.x, transform.position.y, -0.005f);
+            transform.position = new Vector3 (transform.position.x, transform.position.y, -0.1f);
             jumpVec = Vector3.zero;
             jumping = false;
+            col.enabled = true;
+            deathCheck = true;
+            /*if(colliding > 0)
+            {
+                Die();
+            }*/
+
         }
 
         //Debug.Log(Mathf.DeltaAngle(facingAngle, travelAngle));
@@ -218,7 +243,8 @@ public class CarController : MonoBehaviour
         vel += strafe;
         vel += sideAttack;
         vel += boostVec;
-        rb.velocity = vel; 
+        rb.velocity = vel;
+        totalSpeed = vel.magnitude;
     }
 
     void DoCollisions()
@@ -240,11 +266,46 @@ public class CarController : MonoBehaviour
         jumping = true;
     }
 
+    public void SlowDown()
+    {
+        if(currentSpeed > 0)
+        {
+            currentSpeed -= dragFactor * 3 * Time.deltaTime;
+        }
+        else if(currentSpeed < 0)
+        {
+            currentSpeed += dragFactor * 3 * Time.deltaTime;
+        }
+    }
+
     public void SetInputVector(Vector3 inputVector, float saInput)
     {
         steeringInput = inputVector.x;
         accelerationInput = inputVector.y;
         strafingInput = inputVector.z;
         sideAttackInput = saInput;
+
+        if(inputVector.magnitude != 0)
+        {
+            startedMoving = true;
+        }
     }
+
+    public void Die()
+    {
+        Debug.Log("Died");
+        SpriteRenderer sp = GetComponentInChildren<SpriteRenderer>();
+        sp.enabled = false;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        colliding++;
+    }
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        colliding--;
+    }
+
+
 }

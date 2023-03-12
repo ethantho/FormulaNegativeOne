@@ -14,7 +14,7 @@ public class CarInputHandler : MonoBehaviour
     int RCount;
     float RCool;
 
-    float doubleTapThreshold = 0.3f;
+    float doubleTapThreshold = 0.2f;
 
     float sideAttack;
     // Start is called before the first frame update
